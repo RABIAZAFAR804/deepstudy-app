@@ -8,6 +8,11 @@
     min-height: 100vh;
   }
 
+  html.light body {
+    background-color: #F8FAFC;
+    color: #0F172A;
+  }
+
   h1, h2, h3, h4, h5, h6, .font-display, .font-heading {
     font-family: 'Geist', 'Inter', system-ui, sans-serif;
   }
@@ -25,7 +30,7 @@
   font-family: 'JetBrains Mono', monospace;
 }
 
-/* Glassmorphism panels */
+/* Glassmorphism panels - Dark & Light adaptive */
 .glass-panel {
   background-color: rgba(30, 30, 34, 0.75);
   backdrop-filter: blur(16px);
@@ -38,9 +43,20 @@
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+html.light .glass-panel {
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
+}
+
 .glass-panel:hover {
   border-color: rgba(214, 186, 255, 0.35);
   box-shadow: 0 0 24px rgba(157, 92, 255, 0.08), 0 4px 24px -2px rgba(0, 0, 0, 0.6);
+}
+
+html.light .glass-panel:hover {
+  border-color: rgba(124, 58, 237, 0.3);
+  box-shadow: 0 8px 30px -4px rgba(124, 58, 237, 0.08);
 }
 
 .glow-panel-active {

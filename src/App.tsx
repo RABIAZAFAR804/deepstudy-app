@@ -3,41 +3,92 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
-import { NavTab, UserProfile, Lecture, LectureSummary, Quiz, CommunityPost, SuggestedGroup, AppNotification } from './types';
+import React, { useState, useEffect } from 'react';
+import {
+  NavTab,
+  UserProfile,
+  Lecture,
+  LectureSummary,
+  Quiz,
+  CommunityPost,
+  SuggestedGroup,
+  AppNotification,
+  AppTheme
+} from './types';
 import {
   initialUserProfile,
   initialLectures,
-  initialSummaries,
+  initialLectureSummaries,
   initialQuizzes,
   initialCommunityPosts,
-  trendingTopics,
+  initialTrendingTopics,
   initialSuggestedGroups,
-  initialNotifications
+  initialNotifications,
+  bscsSubjectsList,
+  mastersPhdResourcesList,
+  mdcatSubjectsList,
+  mdcatPastPapersList,
+  youtubeEducationalChannelsList
 } from './data/mockData';
+import { THEMES } from './utils/themeConfig';
+import { usePWAInstall } from './hooks/usePWAInstall';
+
 import { TopAppBar } from './components/Navigation/TopAppBar';
 import { SideNav } from './components/Navigation/SideNav';
 import { BottomNavBar } from './components/Navigation/BottomNavBar';
 import { DashboardScreen } from './components/Dashboard/DashboardScreen';
+import { AIToolsScreen } from './components/AITools/AIToolsScreen';
+import { BSCSHubScreen } from './components/BSCS/BSCSHubScreen';
+import { MastersPhdScreen } from './components/MastersPhD/MastersPhdScreen';
+import { MDCATHubScreen } from './components/MDCAT/MDCATHubScreen';
+import { YouTubeHubScreen } from './components/YouTube/YouTubeHubScreen';
 import { SummariesScreen } from './components/Summaries/SummariesScreen';
 import { QuizzesScreen } from './components/Quizzes/QuizzesScreen';
 import { CommunityScreen } from './components/Community/CommunityScreen';
+import { AppFooter } from './components/Footer/AppFooter';
+
 import { LiveLectureSessionModal } from './components/Lecture/LiveLectureSessionModal';
 import { FocusSessionModal } from './components/Focus/FocusSessionModal';
+import { PdfViewerModal } from './components/Community/PdfViewerModal';
+import { PWAInstallModal } from './components/PWA/PWAInstallModal';
+import { AIFloatingAssistant } from './components/AI/AIFloatingAssistant';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<NavTab>('dashboard');
   const [user, setUser] = useState<UserProfile>(initialUserProfile);
   const [lectures, setLectures] = useState<Lecture[]>(initialLectures);
-  const [summaries, setSummaries] = useState<LectureSummary[]>(initialSummaries);
+  const [summaries, setSummaries] = useState<LectureSummary[]>(initialLectureSummaries);
   const [quizzes, setQuizzes] = useState<Quiz[]>(initialQuizzes);
   const [posts, setPosts] = useState<CommunityPost[]>(initialCommunityPosts);
   const [suggestedGroups, setSuggestedGroups] = useState<SuggestedGroup[]>(initialSuggestedGroups);
   const [notifications, setNotifications] = useState<AppNotification[]>(initialNotifications);
   
+  // Theme state - Only Dark & Light
+  const [currentTheme, setCurrentTheme] = useState<AppTheme>('dark');
+
+  // PWA install state
+  const { isInstallable, isInstalled, install } = usePWAInstall();
+  const [isPwaModalOpen, setIsPwaModalOpen] = useState(false);
+
   // Modals
   const [activeLiveLecture, setActiveLiveLecture] = useState<Lecture | null>(null);
   const [isFocusModalOpen, setIsFocusModalOpen] = useState(false);
+  const [previewPdfFileName, setPreviewPdfFileName] = useState<string | null>(null);
+
+  // Apply theme to document root
+  useEffect(() => {
+    const themeObj = THEMES[currentTheme];
+    if (themeObj) {
+      document.documentElement.style.setProperty('--accent-color', themeObj.accentHex);
+    }
+    if (currentTheme === 'light') {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+    } else {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    }
+  }, [currentTheme]);
 
   // Handlers
   const handleMarkNotificationRead = (id: string) => {
@@ -52,12 +103,11 @@ export default function App() {
 
   const handleAddSummary = (newSummary: LectureSummary) => {
     setSummaries((prev) => [newSummary, ...prev]);
-    // Notify user
     setNotifications((prev) => [
       {
         id: `notif-${Date.now()}`,
-        title: 'New Summary Generated',
-        message: `"${newSummary.title}" has been synthesized and saved.`,
+        title: 'New Academic Summary Ready',
+        message: `"${newSummary.title}" has been synthesized and indexed.`,
         timeAgo: 'Just now',
         read: false,
         type: 'lecture'
@@ -77,39 +127,11 @@ export default function App() {
       })
     );
 
-    // Update user stats
     setUser((prev) => ({
       ...prev,
       quizzesMasteredCount: prev.quizzesMasteredCount + 1,
       studyGoalProgress: Math.min(100, prev.studyGoalProgress + 10)
     }));
-
-    // Unlock Victorian Literature if they mastered quizzes
-    setQuizzes((prev) =>
-      prev.map((q) => {
-        if (q.id === 'quiz-avail-3') {
-          return {
-            ...q,
-            isLocked: false,
-            questions: [
-              {
-                id: 'q-5-1',
-                question: 'Which Victorian narrative convention did modernists like Virginia Woolf and James Joyce reject in favor of stream of consciousness?',
-                options: [
-                  'Linear chronological plot with omniscient narrators',
-                  'Use of blank verse',
-                  'Gothic atmosphere',
-                  'Philosophical dialogues'
-                ],
-                correctIndex: 0,
-                explanation: 'Modernists rebelled against the Victorian ordered, chronological, third-person omniscient worldview, seeking to mirror fragmented internal human cognition.'
-              }
-            ]
-          };
-        }
-        return q;
-      })
-    );
   };
 
   const handleToggleLikePost = (postId: string) => {
@@ -200,28 +222,28 @@ export default function App() {
     }));
   };
 
-  const handleTakeQuizForSubject = (subject: string) => {
-    setActiveTab('quizzes');
-  };
-
   return (
-    <div className="min-h-screen flex flex-col bg-[#0F0F12] text-[#e1e3e4] antialiased selection:bg-[#9D5CFF]/30 selection:text-[#ecdcff]">
+    <div className={`min-h-screen flex flex-col ${currentTheme === 'light' ? 'bg-[#F8FAFC] text-[#0F172A]' : 'bg-[#0F0F12] text-[#e1e3e4]'} antialiased selection:bg-[#9D5CFF]/30 selection:text-[#ecdcff] transition-colors duration-200`}>
       {/* Top App Header */}
       <TopAppBar
         user={user}
         notifications={notifications}
+        currentTheme={currentTheme}
+        onThemeChange={setCurrentTheme}
+        onOpenDownloadModal={() => setIsPwaModalOpen(true)}
         onMarkNotificationRead={handleMarkNotificationRead}
         onClearAllNotifications={handleClearAllNotifications}
         onOpenFocusMode={() => setIsFocusModalOpen(true)}
       />
 
       {/* Main Content Layout with Responsive SideNav */}
-      <div className="flex-1 w-full max-w-[1200px] mx-auto px-5 md:px-10 py-6 md:py-8 flex gap-8">
+      <div className="flex-1 w-full max-w-[1240px] mx-auto px-4 md:px-8 py-6 flex gap-6 md:gap-8">
         {/* Desktop Side Navigation */}
         <SideNav
           activeTab={activeTab}
           onTabChange={setActiveTab}
           streakDays={user.streakDays}
+          onOpenDownloadModal={() => setIsPwaModalOpen(true)}
         />
 
         {/* Dynamic Screen Content */}
@@ -233,14 +255,48 @@ export default function App() {
               onJoinLecture={(lecture) => setActiveLiveLecture(lecture)}
               onNavigateTab={setActiveTab}
               onOpenFocusMode={() => setIsFocusModalOpen(true)}
+              onOpenDownloadModal={() => setIsPwaModalOpen(true)}
             />
+          )}
+
+          {activeTab === 'ai_tools' && (
+            <AIToolsScreen
+              onNavigateTab={setActiveTab}
+              onOpenPdfModal={(fileName) => setPreviewPdfFileName(fileName)}
+            />
+          )}
+
+          {activeTab === 'bscs' && (
+            <BSCSHubScreen
+              subjects={bscsSubjectsList}
+              onOpenPdfModal={(fileName) => setPreviewPdfFileName(fileName)}
+            />
+          )}
+
+          {activeTab === 'masters_phd' && (
+            <MastersPhdScreen
+              resources={mastersPhdResourcesList}
+              onOpenPdfModal={(fileName) => setPreviewPdfFileName(fileName)}
+            />
+          )}
+
+          {activeTab === 'mdcat' && (
+            <MDCATHubScreen
+              subjects={mdcatSubjectsList}
+              pastPapers={mdcatPastPapersList}
+              onOpenPdfModal={(fileName) => setPreviewPdfFileName(fileName)}
+            />
+          )}
+
+          {activeTab === 'youtube' && (
+            <YouTubeHubScreen channels={youtubeEducationalChannelsList} />
           )}
 
           {activeTab === 'summaries' && (
             <SummariesScreen
               summaries={summaries}
               onAddSummary={handleAddSummary}
-              onTakeQuizForSubject={handleTakeQuizForSubject}
+              onTakeQuizForSubject={() => setActiveTab('quizzes')}
             />
           )}
 
@@ -255,7 +311,7 @@ export default function App() {
           {activeTab === 'community' && (
             <CommunityScreen
               posts={posts}
-              trendingTopics={trendingTopics}
+              trendingTopics={initialTrendingTopics}
               suggestedGroups={suggestedGroups}
               user={user}
               onToggleLikePost={handleToggleLikePost}
@@ -267,6 +323,12 @@ export default function App() {
           )}
         </main>
       </div>
+
+      {/* App License & Attribution Footer (© All Rights Reserved 2026 Rabia Zafar) */}
+      <AppFooter
+        onNavigateTab={(tab) => setActiveTab(tab as NavTab)}
+        onOpenDownloadModal={() => setIsPwaModalOpen(true)}
+      />
 
       {/* Mobile Bottom Navigation Bar */}
       <BottomNavBar activeTab={activeTab} onTabChange={setActiveTab} />
@@ -282,6 +344,29 @@ export default function App() {
         isOpen={isFocusModalOpen}
         onClose={() => setIsFocusModalOpen(false)}
         onLogFocusMinutes={handleLogFocusMinutes}
+      />
+
+      {/* PDF Viewer & Notes Downloader Modal */}
+      <PdfViewerModal
+        isOpen={!!previewPdfFileName}
+        onClose={() => setPreviewPdfFileName(null)}
+        fileName={previewPdfFileName || 'Document.pdf'}
+      />
+
+      {/* PWA Google Chrome Download & Install Modal */}
+      <PWAInstallModal
+        isOpen={isPwaModalOpen}
+        onClose={() => setIsPwaModalOpen(false)}
+        onInstall={install}
+        isInstallable={isInstallable}
+        isInstalled={isInstalled}
+      />
+
+      {/* Full-Height AI Copilot Dock & Information Engine (Spans top-16 to bottom) */}
+      <AIFloatingAssistant
+        user={user}
+        activeContext={activeTab.toUpperCase()}
+        onNavigateTab={(tab) => setActiveTab(tab as NavTab)}
       />
     </div>
   );

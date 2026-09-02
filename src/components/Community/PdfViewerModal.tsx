@@ -66,7 +66,7 @@ export const PdfViewerModal: React.FC<PdfViewerModalProps> = ({
               <h4 className="font-geist text-lg font-bold text-[#e1e3e4] mt-2">
                 Data Structures & Graph Algorithms Summary
               </h4>
-              <p className="text-xs text-[#968da0]">Author: Alex Mercer • Semester Final Edition</p>
+              <p className="text-xs text-[#968da0]">Author: Rabia Zafar • DeepStudy Academic Hub</p>
             </div>
 
             {/* Complexity Cheat Table */}
