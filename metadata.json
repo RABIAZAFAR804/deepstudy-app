@@ -1,0 +1,7 @@
+{
+  "name": "DeepStudy",
+  "description": "Production-ready academic deep work dashboard, AI lecture summaries, interactive quizzes, and collaborative community hub.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
