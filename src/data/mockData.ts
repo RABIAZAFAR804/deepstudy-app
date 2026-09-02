@@ -11,7 +11,7 @@ import {
 
 export const initialUserProfile: UserProfile = {
   name: 'Rabia Zafar',
-  handle: '@alex_codes',
+  handle: '@rabia_codes',
   avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBJiTOgnrjqydzgGRcRavTC-RnwDLyEiB-cAzRLEZDq_Kx81ZBMUwFfzppoFVMRN-RSeNpwGrs0tVM8RcR_yhWmhrCBKsi-HYHWk_evMhlOioa-EcEFnl1c5O3tojZeqX1dvfVYQVtNwsu7naTTL494NmIMueX32q4lbYrIBQAwQBGbRcfy5PHLyxsX_fFko7yy9fZxHkFuKoJIxeyQcgcZX2IUhWcH1E3nz2fPq4z89S6srKl6OPPz7g',
   focusHoursThisWeek: 14.5,
   quizzesMasteredCount: 8,
