@@ -1,7 +1,21 @@
 import React, { useState } from 'react';
 import { X, Sparkles, Wand2, FileText, Check, Copy, RefreshCw, Layers } from 'lucide-react';
 import { LectureSummary } from '../../types';
-
+const generateAISummary = async (inputText: string) => {
+  const apiKey = "AQ.Ab8RN6KnowZxW3T2cOwaPRBDqfxfyST0VWMIavrBrbvYne45tg";
+  try {
+    const response = await fetch(`https://googleapis.com{apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contents: [{ parts: [{ text: `Summarize this study note concisely for a student: ${inputText}` }] }] })
+    });
+    const data = await response.json();
+    return data.candidates[0].content.parts[0].text;
+  } catch (error) {
+    console.error("AI Error:", error);
+    return "AI generation failed. Please try again.";
+  }
+};
 interface TextProcessorDrawerProps {
   isOpen: boolean;
   onClose: () => void;
