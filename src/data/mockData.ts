@@ -9,6 +9,14 @@ import {
   AppNotification
 } from '../types';
 
+export {
+  bscsSubjectsList,
+  mastersPhdResourcesList,
+  mdcatSubjectsList,
+  mdcatPastPapersList,
+  youtubeEducationalChannelsList
+} from './academicData';
+
 export const initialUserProfile: UserProfile = {
   name: 'Rabia Zafar',
   handle: '@rabia_codes',
@@ -632,3 +640,7 @@ export const initialNotifications: AppNotification[] = [
     type: 'quiz'
   }
 ];
+
+export const initialLectureSummaries = initialSummaries;
+export const initialTrendingTopics = trendingTopics;
+

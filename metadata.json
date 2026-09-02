@@ -2,6 +2,7 @@
   "name": "DeepStudy by Rabia Zafar",
   "description": "Comprehensive academic hub for BSCS core subjects, MS & PhD research, MDCAT past papers, interactive MCQs, YouTube lecture channels, and AI study copilot.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
-
